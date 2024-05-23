@@ -8,8 +8,13 @@
 int nPiles;
 int* board;
 
+char currentPlayer = 0;
+
 int RandomNumber(int min, int max)
 {
+	if (min == max)
+		return min;
+
 	return min + rand() % (max - min);
 }
 
@@ -44,20 +49,38 @@ char PlayerAction()
 	scanf("%d", &pileIndex);
 	pileIndex -= 1;
 
-
 	if (pileIndex >= nPiles)
 		return -1;
+
+	if (board[pileIndex] == 0)
+		return -2;
 
 	printf("Chose number of sticks to remove: ");
 	int stickCount;
 	scanf("%d", &stickCount);
 
+	if (stickCount == 0)
+		return -3;
+
 	if (stickCount > board[pileIndex])
-		return -2;
+		return -4;
 
 	board[pileIndex] -= stickCount;
 
 	return 0;
+}
+
+void DummyAction()
+{
+	for (int i = 0; i < nPiles; i++)
+	{
+		if (board[i] > 0)
+		{
+			board[i] -= RandomNumber(1, board[i]);
+			break;
+		}
+	}
+
 }
 
 int BoardSum()
@@ -68,9 +91,24 @@ int BoardSum()
 	return sum;
 }
 
+char CheckForWinner()
+{
+	if (BoardSum() == 0)
+	{
+		printf("*** The winner is Player %d ***\n", !currentPlayer + 1);
+		return 0;
+	}
+
+	return 1;
+}
+
 int main()
 {
+	char a = 0;
+	printf("test %d\n", !a);
 	srand(time(NULL));
+
+	RandomNumber(1, 1);
 
 	printf("-----------------------------------\n");
 	printf("|     Welcome to the game Nim     |\n");
@@ -80,12 +118,30 @@ int main()
 
 	PrintBoard();
 
-	while (BoardSum() > 0)
+	char done = 1;
+	while (done)
 	{
+		currentPlayer = 0;
+		printf("Player %d turn!\n", currentPlayer+1);
+
 		if (PlayerAction() != 0)
-			printf("[Input Error]");
+			printf("[Input Error]\n");
 
 		PrintBoard();
+
+		done = CheckForWinner();
+
+		if (done != 0)
+		{
+			currentPlayer = 1;
+			printf("Player %d turn!\n", currentPlayer+1);
+
+			DummyAction();
+
+			PrintBoard();
+
+			done = CheckForWinner();
+		}
 	}
 
 
