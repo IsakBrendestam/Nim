@@ -10,6 +10,16 @@ int* board;
 
 char currentPlayer = 0;
 
+int lastPile = 0;
+int lastStickCount = 0;
+
+void PrintTitle()
+{
+	printf("-----------------------------------\n");
+	printf("|     Welcome to the game Nim     |\n");
+	printf("-----------------------------------\n\n");
+}
+
 int RandomNumber(int min, int max)
 {
 	if (min == max)
@@ -31,6 +41,14 @@ void GenerateBoard()
 
 void PrintBoard()
 {
+	system("clear");
+
+	PrintTitle();
+
+	printf(" Last Round: \n");
+	printf(" Pile: %d\n", lastPile + 1);
+	printf(" Sticks Removed: %d\n\n", lastStickCount);
+	
 	printf("--- Board ---\n");
 	for (int i = 0; i < nPiles; i++)
 	{
@@ -67,20 +85,25 @@ char PlayerAction()
 
 	board[pileIndex] -= stickCount;
 
+	lastPile = pileIndex;
+	lastStickCount = stickCount;
+
 	return 0;
 }
 
 void DummyAction()
 {
 	for (int i = 0; i < nPiles; i++)
-	{
 		if (board[i] > 0)
 		{
-			board[i] -= RandomNumber(1, board[i]);
+			int stickCount = RandomNumber(1, board[i]);
+			board[i] -= stickCount;
+
+			lastPile = i;
+			lastStickCount = stickCount;
+
 			break;
 		}
-	}
-
 }
 
 int BoardSum()
@@ -104,15 +127,9 @@ char CheckForWinner()
 
 int main()
 {
-	char a = 0;
-	printf("test %d\n", !a);
 	srand(time(NULL));
 
 	RandomNumber(1, 1);
-
-	printf("-----------------------------------\n");
-	printf("|     Welcome to the game Nim     |\n");
-	printf("-----------------------------------\n\n");
 
 	GenerateBoard();
 
